@@ -1,0 +1,121 @@
+package com.example.clock.ui.components
+
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.Canvas
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
+import com.example.clock.ui.theme.CyanNeon
+import com.example.clock.ui.theme.PurpleElectric
+import com.example.clock.ui.theme.SurfaceVariantDark
+import java.util.Calendar
+import kotlin.math.cos
+import kotlin.math.sin
+
+@Composable
+fun AnalogClock(
+    modifier: Modifier = Modifier,
+    hourColor: Color = CyanNeon,
+    minuteColor: Color = CyanNeon,
+    secondColor: Color = PurpleElectric,
+    dialColor: Color = SurfaceVariantDark,
+    dotColor: Color = CyanNeon,
+    showSecondHand: Boolean = true
+) {
+    val infiniteTransition = rememberInfiniteTransition(label = "clock")
+
+    val time by produceState(initialValue = Calendar.getInstance()) {
+        while (true) {
+            value = Calendar.getInstance()
+            kotlinx.coroutines.delay(50)
+        }
+    }
+
+    Canvas(modifier = modifier) {
+        val center = Offset(size.width / 2, size.height / 2)
+        val radius = minOf(size.width, size.height) / 2f * 0.9f
+
+        // Dial background
+        drawCircle(color = dialColor, radius = radius, center = center)
+        drawCircle(
+            color = hourColor.copy(alpha = 0.2f),
+            radius = radius,
+            center = center,
+            style = Stroke(width = 2f)
+        )
+
+        // Hour marks
+        for (i in 0 until 12) {
+            val angle = Math.toRadians((i * 30 - 90).toDouble())
+            val isMainMark = i % 3 == 0
+            val markLength = if (isMainMark) radius * 0.15f else radius * 0.08f
+            val markWidth = if (isMainMark) 3f else 1.5f
+            val startX = center.x + (radius * 0.82f) * cos(angle).toFloat()
+            val startY = center.y + (radius * 0.82f) * sin(angle).toFloat()
+            val endX = center.x + (radius * 0.82f + markLength) * cos(angle).toFloat()
+            val endY = center.y + (radius * 0.82f + markLength) * sin(angle).toFloat()
+            drawLine(
+                color = if (isMainMark) dotColor else dotColor.copy(alpha = 0.5f),
+                start = Offset(startX, startY),
+                end = Offset(endX, endY),
+                strokeWidth = markWidth,
+                cap = StrokeCap.Round
+            )
+        }
+
+        val cal = time
+        val hour = cal.get(Calendar.HOUR).toFloat()
+        val minute = cal.get(Calendar.MINUTE).toFloat()
+        val second = cal.get(Calendar.SECOND).toFloat()
+        val millis = cal.get(Calendar.MILLISECOND).toFloat()
+
+        val secondAngle = Math.toRadians(((second + millis / 1000f) * 6f - 90).toDouble())
+        val minuteAngle = Math.toRadians(((minute + second / 60f) * 6f - 90).toDouble())
+        val hourAngle = Math.toRadians(((hour + minute / 60f) * 30f - 90).toDouble())
+
+        // Hour hand
+        drawHand(center, radius * 0.5f, hourAngle, hourColor, 8f)
+        // Minute hand
+        drawHand(center, radius * 0.72f, minuteAngle, minuteColor, 5f)
+        // Second hand
+        if (showSecondHand) {
+            drawHand(center, radius * 0.82f, secondAngle, secondColor, 2f)
+            // Second tail
+            val tailX = center.x + radius * 0.2f * cos(secondAngle + Math.PI).toFloat()
+            val tailY = center.y + radius * 0.2f * sin(secondAngle + Math.PI).toFloat()
+            drawLine(
+                color = secondColor,
+                start = center,
+                end = Offset(tailX, tailY),
+                strokeWidth = 2f,
+                cap = StrokeCap.Round
+            )
+        }
+
+        // Center dot
+        drawCircle(color = dotColor, radius = 8f, center = center)
+        drawCircle(color = Color.Black, radius = 4f, center = center)
+    }
+}
+
+private fun DrawScope.drawHand(
+    center: Offset,
+    length: Float,
+    angle: Double,
+    color: Color,
+    width: Float
+) {
+    val endX = center.x + length * cos(angle).toFloat()
+    val endY = center.y + length * sin(angle).toFloat()
+    drawLine(
+        color = color,
+        start = center,
+        end = Offset(endX, endY),
+        strokeWidth = width,
+        cap = StrokeCap.Round
+    )
+}

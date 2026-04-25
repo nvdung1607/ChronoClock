@@ -1,0 +1,79 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Dark navy background -->
+    <path
+        android:fillColor="#0A0E1A"
+        android:pathData="M0,0h108v108h-108z"/>
+
+    <!-- Outer glow ring -->
+    <path
+        android:fillColor="#0000FF"
+        android:pathData="M54,10 a44,44 0 0 1 0,88 a44,44 0 0 1 0,-88z"
+        android:fillAlpha="0"/>
+    <path
+        android:strokeColor="#00D4FF"
+        android:strokeWidth="2"
+        android:fillColor="#00000000"
+        android:pathData="M54,12 a42,42 0 0 1 0,84 a42,42 0 0 1 0,-84z"
+        android:strokeAlpha="0.4"/>
+
+    <!-- Clock face circle -->
+    <path
+        android:strokeColor="#00D4FF"
+        android:strokeWidth="3"
+        android:fillColor="#111827"
+        android:pathData="M54,16 a38,38 0 0 1 0,76 a38,38 0 0 1 0,-76z"/>
+
+    <!-- Hour marks at 12, 3, 6, 9 -->
+    <path android:fillColor="#00D4FF"
+        android:pathData="M52,18h4v6h-4z"/>
+    <path android:fillColor="#00D4FF"
+        android:pathData="M84,52v4h-6v-4z"/>
+    <path android:fillColor="#00D4FF"
+        android:pathData="M52,84h4v6h-4z"/>
+    <path android:fillColor="#00D4FF"
+        android:pathData="M18,52v4h6v-4z"/>
+
+    <!-- Minute marks (small dots) -->
+    <!-- Top-right area -->
+    <path android:fillColor="#00D4FF" android:fillAlpha="0.5"
+        android:pathData="M71,20.5l2,3.46"/>
+    <path android:fillColor="#00D4FF" android:fillAlpha="0.5"
+        android:pathData="M83,32.5l-3.46,2"/>
+
+    <!-- Hour hand (pointing roughly to 10) -->
+    <path
+        android:fillColor="#00D4FF"
+        android:pathData="M54,54 L36,30"
+        android:strokeColor="#00D4FF"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"/>
+
+    <!-- Minute hand (pointing to 2) -->
+    <path
+        android:fillColor="#00D4FF"
+        android:pathData="M54,54 L74,38"
+        android:strokeColor="#00D4FF"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"/>
+
+    <!-- Second hand (purple) -->
+    <path
+        android:strokeColor="#7B61FF"
+        android:strokeWidth="1.5"
+        android:pathData="M54,54 L60,22"
+        android:strokeLineCap="round"/>
+
+    <!-- Center dot -->
+    <path
+        android:fillColor="#00D4FF"
+        android:pathData="M54,50a4,4 0 0 1 0,8a4,4 0 0 1 0,-8z"/>
+    <path
+        android:fillColor="#0A0E1A"
+        android:pathData="M54,52a2,2 0 0 1 0,4a2,2 0 0 1 0,-4z"/>
+
+</vector>
