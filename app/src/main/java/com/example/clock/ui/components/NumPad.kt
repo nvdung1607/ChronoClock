@@ -17,7 +17,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.clock.ui.theme.NunitoFamily
-import com.example.clock.ui.theme.SurfaceVariantDark
 
 // Numeric keypad for timer input: 1-9, 00, 0, ⌫
 @Composable

@@ -2,6 +2,7 @@ package com.example.clock.ui.components
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -9,15 +10,13 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
-import com.example.clock.ui.theme.CyanNeon
-import com.example.clock.ui.theme.SurfaceVariantDark
 
 @Composable
 fun CircularProgressArc(
     modifier: Modifier = Modifier,
     progress: Float,          // 0f to 1f
-    trackColor: Color = SurfaceVariantDark,
-    progressColor: Color = CyanNeon,
+    trackColor: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+    progressColor: Color = MaterialTheme.colorScheme.primary,
     strokeWidth: Float = 12f,
     startAngle: Float = -90f
 ) {

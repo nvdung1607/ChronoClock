@@ -53,6 +53,11 @@ class PomodoroViewModel : ViewModel() {
     fun skip() {
         job?.cancel()
         _isRunning.value = false
+        // If skipping a focus phase, still count it as completed
+        if (_phase.value == PomodoroPhase.FOCUS) {
+            _completedSessions.value++
+            _todayPomodoros.value++
+        }
         advancePhase()
     }
 
@@ -69,9 +74,11 @@ class PomodoroViewModel : ViewModel() {
         job = viewModelScope.launch {
             while (_remainingSeconds.value > 0 && _isRunning.value) {
                 delay(1000)
-                _remainingSeconds.value -= 1
+                if (_isRunning.value) {
+                    _remainingSeconds.value -= 1
+                }
             }
-            if (_remainingSeconds.value <= 0) {
+            if (_remainingSeconds.value <= 0 && _isRunning.value) {
                 _isRunning.value = false
                 if (_phase.value == PomodoroPhase.FOCUS) {
                     _completedSessions.value++
@@ -93,8 +100,12 @@ class PomodoroViewModel : ViewModel() {
         val completed = _completedSessions.value
         val nextPhase = when (_phase.value) {
             PomodoroPhase.FOCUS -> {
-                if (completed % s.sessionsBeforeLongBreak == 0) PomodoroPhase.LONG_BREAK
-                else PomodoroPhase.SHORT_BREAK
+                // Long break only after completing enough sessions (never at 0)
+                if (completed > 0 && completed % s.sessionsBeforeLongBreak == 0) {
+                    PomodoroPhase.LONG_BREAK
+                } else {
+                    PomodoroPhase.SHORT_BREAK
+                }
             }
             PomodoroPhase.SHORT_BREAK, PomodoroPhase.LONG_BREAK -> PomodoroPhase.FOCUS
         }
@@ -112,10 +123,8 @@ class PomodoroViewModel : ViewModel() {
         _totalSeconds.value = secs
     }
 
-    val progress: Float
-        get() {
-            val total = _totalSeconds.value
-            if (total == 0L) return 0f
-            return (_remainingSeconds.value.toFloat() / total).coerceIn(0f, 1f)
-        }
+    // Reactive progress for Compose recomposition
+    val progressFlow: StateFlow<Float> = combine(_remainingSeconds, _totalSeconds) { remaining, total ->
+        if (total == 0L) 0f else (remaining.toFloat() / total).coerceIn(0f, 1f)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 1f)
 }

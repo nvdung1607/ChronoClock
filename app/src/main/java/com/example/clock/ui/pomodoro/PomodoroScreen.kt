@@ -28,6 +28,7 @@ fun PomodoroScreen(vm: PomodoroViewModel = viewModel()) {
     val completedSessions by vm.completedSessions.collectAsState()
     val todayPomodoros by vm.todayPomodoros.collectAsState()
     val settings by vm.settings.collectAsState()
+    val progress by vm.progressFlow.collectAsState()
     var showSettings by remember { mutableStateOf(false) }
 
     val phaseColor = when (phase) {
@@ -93,8 +94,9 @@ fun PomodoroScreen(vm: PomodoroViewModel = viewModel()) {
 
         // Session dots
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            val sessionsInCycle = completedSessions % settings.sessionsBeforeLongBreak
             repeat(settings.sessionsBeforeLongBreak) { index ->
-                val filled = index < (completedSessions % settings.sessionsBeforeLongBreak)
+                val filled = index < sessionsInCycle
                 Box(
                     modifier = Modifier
                         .size(12.dp)
@@ -110,7 +112,7 @@ fun PomodoroScreen(vm: PomodoroViewModel = viewModel()) {
         Box(modifier = Modifier.size(260.dp), contentAlignment = Alignment.Center) {
             CircularProgressArc(
                 modifier = Modifier.fillMaxSize(),
-                progress = vm.progress,
+                progress = progress,
                 progressColor = phaseColor,
                 trackColor = phaseColor.copy(alpha = 0.15f),
                 strokeWidth = 14f

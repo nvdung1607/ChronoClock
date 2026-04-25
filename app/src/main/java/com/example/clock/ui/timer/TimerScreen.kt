@@ -33,6 +33,7 @@ fun TimerScreen(vm: TimerViewModel = viewModel()) {
     val startMinute by vm.startMinute.collectAsState()
     val endHour by vm.endHour.collectAsState()
     val endMinute by vm.endMinute.collectAsState()
+    val progress by vm.progress.collectAsState()
 
     val isLow = remainingSeconds < 30 && timerState == TimerState.RUNNING
     val progressColor = if (isLow) MaterialTheme.colorScheme.error
@@ -108,7 +109,7 @@ fun TimerScreen(vm: TimerViewModel = viewModel()) {
                 ) {
                     CircularProgressArc(
                         modifier = Modifier.fillMaxSize(),
-                        progress = vm.progress,
+                        progress = progress,
                         progressColor = progressColor,
                         strokeWidth = 12f
                     )

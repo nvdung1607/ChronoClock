@@ -6,11 +6,13 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -41,8 +43,19 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            ClockTheme(darkTheme = true) {
-                ClockApp()
+            // Follow system theme by default, user can override
+            val systemDark = isSystemInDarkTheme()
+            // null = follow system, true = forced dark, false = forced light
+            var themeOverride by rememberSaveable { mutableStateOf<Boolean?>(null) }
+            val isDark = themeOverride ?: systemDark
+
+            ClockTheme(darkTheme = isDark) {
+                ClockApp(
+                    isDarkTheme = isDark,
+                    onToggleTheme = {
+                        themeOverride = if (isDark) false else true
+                    }
+                )
             }
         }
     }
@@ -50,7 +63,7 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ClockApp() {
+fun ClockApp(isDarkTheme: Boolean, onToggleTheme: () -> Unit) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -64,7 +77,7 @@ fun ClockApp() {
             }
             TopAppBar(
                 title = {
-                    Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = currentScreen?.icon ?: "🕐",
                             fontSize = 22.sp,
@@ -75,6 +88,14 @@ fun ClockApp() {
                             style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onSurface,
                             fontWeight = FontWeight.Bold
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = onToggleTheme) {
+                        Text(
+                            text = if (isDarkTheme) "☀️" else "🌙",
+                            fontSize = 22.sp
                         )
                     }
                 },

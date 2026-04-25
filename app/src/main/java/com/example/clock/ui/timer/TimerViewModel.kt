@@ -1,6 +1,5 @@
 package com.example.clock.ui.timer
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.*
@@ -39,6 +38,11 @@ class TimerViewModel : ViewModel() {
 
     private val _totalSeconds = MutableStateFlow(0L)
     val totalSeconds: StateFlow<Long> = _totalSeconds
+
+    // Progress as a reactive StateFlow (not a plain getter)
+    val progress: StateFlow<Float> = combine(_remainingSeconds, _totalSeconds) { remaining, total ->
+        if (total == 0L) 0f else (remaining.toFloat() / total).coerceIn(0f, 1f)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0f)
 
     private var job: Job? = null
 
@@ -122,6 +126,7 @@ class TimerViewModel : ViewModel() {
         _timerState.value = TimerState.IDLE
         _remainingSeconds.value = 0
         _totalSeconds.value = 0
+        _digitInput.value = ""
     }
 
     private fun runCountdown() {
@@ -129,20 +134,15 @@ class TimerViewModel : ViewModel() {
         job = viewModelScope.launch {
             while (_remainingSeconds.value > 0 && _timerState.value == TimerState.RUNNING) {
                 delay(1000)
-                _remainingSeconds.value -= 1
+                if (_timerState.value == TimerState.RUNNING) {
+                    _remainingSeconds.value -= 1
+                }
             }
             if (_remainingSeconds.value <= 0 && _timerState.value == TimerState.RUNNING) {
                 _timerState.value = TimerState.FINISHED
             }
         }
     }
-
-    val progress: Float
-        get() {
-            val total = _totalSeconds.value
-            if (total == 0L) return 0f
-            return (_remainingSeconds.value.toFloat() / total).coerceIn(0f, 1f)
-        }
 }
 
 fun formatTimerDisplay(seconds: Long): Triple<String, String, String> {
