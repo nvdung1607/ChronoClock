@@ -38,18 +38,22 @@ Dự án được xây dựng theo tiêu chuẩn phát triển Android hiện đ
 ### Biểu đồ Use-Case (Góc nhìn người dùng)
 
 ```mermaid
-usecaseDiagram
-    actor "Người Dùng" as User
+flowchart LR
+    %% Định nghĩa hình dáng (styling)
+    classDef actor fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef usecase fill:#bbf,stroke:#333,stroke-width:2px,rx:20px,ry:20px;
 
-    package "Clock App" {
-        usecase "Xem giờ & Thêm múi giờ" as UC1
-        usecase "Tạo/Sửa/Xóa Báo Thức" as UC2
-        usecase "Đo thời gian (Bấm giờ)" as UC3
-        usecase "Đặt hẹn giờ đếm ngược" as UC4
-        usecase "Học tập (Pomodoro)" as UC5
-        
-        usecase "Nhận thông báo/Chuông báo" as UC6
-    }
+    User(("👤 Người Dùng")):::actor
+
+    subgraph ClockApp ["Clock App"]
+        direction TB
+        UC1(["Xem giờ & Thêm múi giờ"]):::usecase
+        UC2(["Tạo/Sửa/Xóa Báo Thức"]):::usecase
+        UC3(["Đo thời gian (Bấm giờ)"]):::usecase
+        UC4(["Đặt hẹn giờ đếm ngược"]):::usecase
+        UC5(["Học tập (Pomodoro)"]):::usecase
+        UC6(["🔔 Nhận thông báo/Chuông báo"]):::usecase
+    end
 
     User --> UC1
     User --> UC2
@@ -57,9 +61,9 @@ usecaseDiagram
     User --> UC4
     User --> UC5
     
-    UC2 --> UC6 : Kích hoạt
-    UC4 --> UC6 : Kích hoạt
-    UC5 --> UC6 : Kích hoạt
+    UC2 -.->|Kích hoạt| UC6
+    UC4 -.->|Kích hoạt| UC6
+    UC5 -.->|Kích hoạt| UC6
 ```
 
 ---
